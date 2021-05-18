@@ -4,7 +4,7 @@
 #include "stat.h"
 #include "user.h"
 #include "fcntl.h"
-#define SINGLESHOT
+//#define SINGLESHOT
 
 char *argv[] = { "sh", 0 };
 
@@ -28,21 +28,21 @@ main(void)
       printf(1, "init: fork failed\n");
       exit();
     }
-    if (pid == 0) {
-        exec("open_files", argv);
-        printf(1, "init: exec sh failed\n");
-        exit();
-    }
+    //if (pid == 0) {
+    //    exec("open_files", argv);
+    //    printf(1, "init: exec sh failed\n");
+    //    exit();
+    //}
 
     sleep(100);
-    // exec the lsof
+    // exec the lsproc
     pid = fork();
     if (pid < 0) {
         printf(1, "init: fork failed\n");
         exit();
     }
     if (pid == 0) {
-        exec("lsof", argv);
+        exec("lsproc", argv);
         printf(1, "init: exec sh failed\n");
         exit();
     }
