@@ -4,7 +4,7 @@
 #include "stat.h"
 #include "user.h"
 #include "fcntl.h"
-#define SINGLESHOT
+//#define SINGLESHOT
 
 char *argv[] = { "sh", 0 };
 
