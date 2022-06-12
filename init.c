@@ -4,7 +4,7 @@
 #include "stat.h"
 #include "user.h"
 #include "fcntl.h"
-//#define SINGLESHOT
+#define SINGLESHOT
 
 char *argv[] = { "sh", 0 };
 
@@ -29,7 +29,7 @@ main(void)
       exit();
     }
     if (pid == 0) {
-        exec("open_files", argv);
+        exec("test_signals", argv);
         printf(1, "init: exec sh failed\n");
         exit();
     }

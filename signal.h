@@ -27,6 +27,7 @@ int sigsend(int pid, int signum);
 #define SIG_DFL  ((sighandler_t)  0)  /* Default action.  */
 #define SIG_IGN  ((sighandler_t)  1)  /* Ignore signal.  */
 
+#define SIGSTOP         17      /* STOP this process. CANNOT be caught or ignored */
 #define SIGTERM         15      /* Termination request.  */
 /* Historical signals specified by POSIX. */
 #define SIGHUP          1       /* Hangup.  */
