@@ -42,7 +42,7 @@ void test_simple_handling(){
         exit();
     }else {
         // parent
-        sigsend(child_pid, SIGALRM);
+        sigsend(child_pid, SIGHUP); // send the signal type that the child expects
         wait();
         printf(1, "parent exiting\n");
     }
@@ -51,7 +51,7 @@ void test_simple_handling(){
 }
 
 // test the use case that a parent sets a signal , and a child inherits it.
-// TODO: just do it!
+// TODO: Implement this test.
 void test_inheritance(){
     printf(1,"%s starts\n", __FUNCTION__ );
     printf(1,"%s completed\n\n", __FUNCTION__ );
@@ -99,7 +99,7 @@ void test_ignore(){
            printf(1,"FAILED\n");
            return;
        }
-       ret = signal(SIGPIPE, SIGSTOP); // impossible to ignore SIGSTOP
+       ret = signal(SIGSTOP,SIG_IGN); // impossible to ignore SIGSTOP
        if(ret != SIG_ERR){
            printf(1,"FAILED\n");
            return;
