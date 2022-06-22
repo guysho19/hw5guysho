@@ -10,6 +10,8 @@ struct sleeplock;
 struct stat;
 struct superblock;
 
+#include "signal.h"
+#define NULL (0)
 // bio.c
 void            binit(void);
 struct buf*     bread(uint, uint);
@@ -57,6 +59,12 @@ int             writei(struct inode*, char*, uint, uint);
 void            ideinit(void);
 void            ideintr(void);
 void            iderw(struct buf*);
+
+// invokesigret.S
+void            invoke_sigret_start(void);
+void            invoke_sigret_end(void);
+void            sigret(void);
+
 
 // ioapic.c
 void            ioapicenable(int irq, int cpu);

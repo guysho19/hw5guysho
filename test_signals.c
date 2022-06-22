@@ -7,17 +7,6 @@
 
 typedef int pid_t;
 
-// DUMMY implementation of signal and sigsend system calls.
-// You MUST delete them (or put in comment) and implement the actual system calls
-sighandler_t signal(int signum, sighandler_t handler){
-    printf(1,"DUMMY signal() called\n");
-    return 0;
-}
-
-int sigsend(int p, int s){
-    printf(1,"DUMMY sigsend() called\n");
-    return 0;
-}
 
 void my_handler(int sig){
     printf(1,"signal handler called with signal=%d\n", sig);

@@ -21,3 +21,7 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_halt   50
+
+#define SYS_signal  52
+#define SYS_sigsend 53
+#define SYS_sigret  54

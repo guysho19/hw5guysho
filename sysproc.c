@@ -98,3 +98,33 @@ sys_halt(void)
 }
 
 
+
+int
+sys_sigsend(void) {
+    int sig,pid;
+    if (argint(0, &pid) < 0)
+        return -1;
+    if (argint(1, &sig) < 0)
+        return -1;
+    return sigsend(pid, sig);
+}
+
+
+int
+sys_signal(void) {
+    int sig;
+    sighandler_t handler;
+    if (argint(0, &sig) < 0)
+        return -1;
+    if (argptr(1, (char**)&handler, sizeof(char*)) < 0)
+        return -1;
+    return signal(sig, handler);
+}
+
+
+int
+sys_sigret(void) {
+  sigret();
+  return 0;
+}
+
