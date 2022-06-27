@@ -3,6 +3,7 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
+#include "signal.h"
 #include "fcntl.h"
 #define SINGLESHOT
 
@@ -22,31 +23,17 @@ main(void)
 
 #ifdef SINGLESHOT
 
-    // exec the tester and don't wait for it
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
       exit();
     }
     if (pid == 0) {
-        exec("open_files", argv);
+        exec("test_signals", argv);
         printf(1, "init: exec sh failed\n");
         exit();
     }
-
-    sleep(100);
     // exec the lsof
-    pid = fork();
-    if (pid < 0) {
-        printf(1, "init: fork failed\n");
-        exit();
-    }
-    if (pid == 0) {
-        exec("lsof", argv);
-        printf(1, "init: exec sh failed\n");
-        exit();
-    }
-    wait();
     wait();
     halt();
 #endif

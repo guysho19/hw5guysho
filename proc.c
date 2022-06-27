@@ -7,6 +7,7 @@
 #include "proc.h"
 #include "spinlock.h"
 
+#include "defs.h" // for sighandler_t
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -112,7 +113,19 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  // TODO add your init code
   return p;
+}
+
+// return from the signal handler.
+// This is called ONLY by the kernel code
+// and must not be called (or be visible) from userland
+void sigret(void) {
+  struct proc * p=myproc();
+  if(p==0)
+    return;
+  memmove(p->tf, & (p->user_backup), sizeof(struct trapframe));
+  // TODO complete the code
 }
 
 //PAGEBREAK: 32
@@ -210,6 +223,10 @@ fork(void)
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
 
+ //  TODO add your init code
+
+  // copy the signal handler to the child
+  // TODO
   pid = np->pid;
 
   acquire(&ptable.lock);
@@ -532,3 +549,66 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+
+sighandler_t signal(int signum, sighandler_t  ptr){
+    // TODO
+    return 0;
+}
+
+
+int sigsend(int pid, int signum){
+   //TODO
+    return 0; // successful execution
+}
+
+
+static void kernel_default_sig_handler(int sig, int pid){
+    cprintf("default signal handler: signal %d was handled by process %d\n", sig, pid);
+}
+
+
+/** This function is called just before a process returns to user space from trapAsm.S
+    If there is a pending signal, call it.
+*/
+void check_signals(struct trapframe *tf){
+  struct proc* p = myproc();
+  if (p == 0 || p->executing_signal){
+    return; // no proc is defined for this CPU
+  }
+
+  if ((tf->cs & 3) != DPL_USER){
+    //cprintf("check_signals: process is in user mode?!");
+    return; // CPU isn't at privilege level 3, hence in user mode
+  }
+  
+  if (p->pending_signals == 0)
+    return; // no pending signals
+
+  int sig_num_to_handle = 999999;// TODO 
+
+  // reset this bit in the mask
+  p->pending_signals &= ~(1 << sig_num_to_handle);
+
+  if(p->sighandler[sig_num_to_handle] == SIG_IGN){
+    cprintf("process %d ignores signal\b", p->pid);
+    return;
+  }
+  if(p->sighandler[sig_num_to_handle] == SIG_DFL) {
+    kernel_default_sig_handler(sig_num_to_handle, p->pid);
+    return;
+  }
+  p->executing_signal = 1; // Mark that we are now handling a signal and will not honor any other signal
+
+  memmove(&p->user_backup, p->tf, sizeof(struct trapframe)); // backing up trap frame
+  p->tf->esp -= (uint)&invoke_sigret_end - (uint)&invoke_sigret_start;
+  memmove((void*)p->tf->esp, &invoke_sigret_start, (uint)&invoke_sigret_end - (uint)&invoke_sigret_start);
+  p->tf->esp -=4;
+  *((int*)(p->tf->esp)) = sig_num_to_handle;
+  p->tf->esp -=4;
+  *((int*)(p->tf->esp)) = p->tf->esp + 8; // sigret system call code address
+  p->tf->eip = (uint)p->sighandler[sig_num_to_handle]; // trapret will resume into signal handler
+
+  p->executing_signal = 0;
+} // check_signals
+
